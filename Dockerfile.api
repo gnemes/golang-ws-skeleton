@@ -1,0 +1,14 @@
+FROM golang:1.13.0-alpine AS build_base
+
+RUN apk add --no-cache git
+ADD . /app
+WORKDIR /app/src
+RUN go mod download
+RUN go build -o ./out/go-app .
+
+FROM keymetrics/pm2:12-alpine
+
+COPY --from=build_base /app/ecosystem.config.json .
+COPY --from=build_base /app/src/out/go-app /app/go-app
+EXPOSE 8080
+CMD [ "pm2-runtime", "start", "ecosystem.config.json", "--env", "dev" ]

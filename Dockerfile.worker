@@ -1,0 +1,12 @@
+FROM golang:1.13.0-alpine AS build_base
+
+RUN apk add --no-cache git
+ADD . /workers
+WORKDIR /workers/src/Infrastructure/Workers
+RUN go mod download
+RUN go build -o ./out/go-worker .
+
+FROM keymetrics/pm2:12-alpine
+COPY --from=build_base /workers/ecosystem.config.worker.json .
+COPY --from=build_base /workers/src/Infrastructure/Workers/out/go-worker /workers/go-worker
+CMD [ "pm2-runtime", "start", "ecosystem.config.worker.json", "--env", "dev" ]

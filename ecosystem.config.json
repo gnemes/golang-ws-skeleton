@@ -1,0 +1,31 @@
+{
+    "apps" : [{
+      "name"       : "app",
+      "script"     : "./app/go-app",
+      "exec_mode"  : "fork_mode",
+      "env" : {
+        "ENVIRONMENT" : "dev",
+        "MYSQL_HOST": "mysql",
+        "MYSQL_PORT": "3306",
+        "MYSQL_USERNAME" : "root",
+        "MYSQL_PASSWORD" : "root",
+        "MYSQL_DATABASE" : "api_golang_dev",
+
+        "LOGGER_CONSOLE_ENABLE" : "true",
+        "LOGGER_CONSOLE_LEVEL" : "debug",
+        "LOGGER_FILE_ENABLE" : "true",
+        "LOGGER_FILE_LEVEL" : "info",
+        "LOGGER_FILE_LOCATION" : "/tmp/log.log",
+      },
+      "env_qa" : {
+        "ENVIRONMENT" : "qa",
+      },
+      "env_uat" : {
+        "ENVIRONMENT" : "uat",
+      },
+      "env_prod" : {
+        "ENVIRONMENT" : "prod"
+      }
+    }
+    ]
+}

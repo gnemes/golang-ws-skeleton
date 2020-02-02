@@ -1,0 +1,63 @@
+version: "3"
+services:
+
+  api:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: "go-ws-skeleton"
+    depends_on:
+      - mysql
+    volumes:
+      - ./src:/go/src/github.com/GoIntegro/go-ws-skeleton/
+      - ./sql/bootstrap.sql:/command/bootstrap.sql
+      - ./sql/dropall.sql:/command/dropall.sql
+    command: "watcher main.go"
+    ports: 
+      - "8080:8080"
+    env_file:
+      - ./config/dev.env
+    networks:
+      - go5
+
+  mysql:
+    image: mysql:8
+    container_name: mysql
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+      - MYSQL_DATABASE=api_golang_dev
+    expose:
+      - "3306"
+    ports:
+      - "3306:3306" 
+    networks:
+      - go5
+
+  rabbitmq:
+    image: rabbitmq:management-alpine
+    container_name: rabbitmq
+    environment:
+      - "RABBITMQ_DEFAULT_USER=rabbit"
+      - "RABBITMQ_DEFAULT_PASS=rabbit"
+      - "RABBITMQ_NODENAME=node@rabbitmq"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - go5      
+
+networks:
+  go5:
+    driver: "bridge"
+
+volumes:
+  mysql-data:
+    driver: "local"
+  rabbitmq-data:
+    driver: "local"
+      
